@@ -1,0 +1,13 @@
+services:
+  myPostgresDBService:
+    image: postgres:13
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=myPostgresDB
+    networks:
+      - myPostgresDBNetwork
+networks:
+  myPostgresDBNetwork:
