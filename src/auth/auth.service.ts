@@ -1,8 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { SignInDTO, SignUpDTO } from './dto';
-import { hash, verify } from 'argon2';
-import { PrismaClientKnownRequestError } from 'generated/prisma/internal/prismaNamespace';
+import { SignInDTO } from './dto';
+import { verify } from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -14,46 +13,46 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  async signup(reqBody: SignUpDTO) {
-    try {
-      if (reqBody.roleId) {
-        const roleExists = await this.prisma.role.findUnique({
-          where: { id: reqBody.roleId },
-          select: { id: true },
-        });
+  // async signup(reqBody: SignUpDTO) {
+  //   try {
+  //     if (reqBody.roleId) {
+  //       const roleExists = await this.prisma.role.findUnique({
+  //         where: { id: reqBody.roleId },
+  //         select: { id: true },
+  //       });
 
-        if (!roleExists) {
-          throw new ForbiddenException('Role does not exists!');
-        }
-      }
+  //       if (!roleExists) {
+  //         throw new ForbiddenException('Role does not exists!');
+  //       }
+  //     }
 
-      const hashedPassword = await hash(reqBody.password);
+  //     const hashedPassword = await hash(reqBody.password);
 
-      const user = await this.prisma.user.create({
-        data: {
-          email: reqBody.email,
-          fullName: reqBody.fullName,
-          password: hashedPassword,
-          roleId: reqBody.roleId,
-        },
-        select: {
-          id: true,
-          email: true,
-          fullName: true,
-          createdAt: true,
-        },
-      });
+  //     const user = await this.prisma.user.create({
+  //       data: {
+  //         email: reqBody.email,
+  //         fullName: reqBody.fullName,
+  //         password: hashedPassword,
+  //         roleId: reqBody.roleId,
+  //       },
+  //       select: {
+  //         id: true,
+  //         email: true,
+  //         fullName: true,
+  //         createdAt: true,
+  //       },
+  //     });
 
-      return { status: true, message: 'Signed up successfully', reqBody: user };
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new ForbiddenException('Email is already in use');
-        }
-      }
-      throw error;
-    }
-  }
+  //     return { status: true, message: 'Signed up successfully', reqBody: user };
+  //   } catch (error) {
+  //     if (error instanceof PrismaClientKnownRequestError) {
+  //       if (error.code === 'P2002') {
+  //         throw new ForbiddenException('Email is already in use');
+  //       }
+  //     }
+  //     throw error;
+  //   }
+  // }
 
   async signin(reqBody: SignInDTO) {
     const user = await this.prisma.user.findUnique({

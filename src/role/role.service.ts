@@ -29,9 +29,13 @@ export class RoleService {
         message: 'Roles fetched successfully',
         data: roles,
       };
-    } catch (error) {
-      console.error(error);
-      throw error;
+    } catch (error: any) {
+      return {
+        status: false,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        message: error.message,
+        data: null,
+      };
     }
   }
 }
