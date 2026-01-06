@@ -16,6 +16,17 @@ export class AuthService {
 
   async signup(reqBody: SignUpDTO) {
     try {
+      if (reqBody.roleId) {
+        const roleExists = await this.prisma.role.findUnique({
+          where: { id: reqBody.roleId },
+          select: { id: true },
+        });
+
+        if (!roleExists) {
+          throw new ForbiddenException('Role does not exists!');
+        }
+      }
+
       const hashedPassword = await hash(reqBody.password);
 
       const user = await this.prisma.user.create({
@@ -23,6 +34,7 @@ export class AuthService {
           email: reqBody.email,
           fullName: reqBody.fullName,
           password: hashedPassword,
+          roleId: reqBody.roleId,
         },
         select: {
           id: true,
@@ -48,6 +60,9 @@ export class AuthService {
       where: {
         email: reqBody.email,
       },
+      include: {
+        role: true,
+      },
     });
 
     if (!user) throw new ForbiddenException('Credentials are not correct');
@@ -60,14 +75,26 @@ export class AuthService {
     return {
       status: true,
       message: 'Signed in successfully',
-      data: await this.signToken(user.id, user.email),
+      data: {
+        token: await this.signToken(user.id, user.email, user.roleId),
+        user: {
+          email: user.email,
+          fullName: user.fullName,
+          role: user.role,
+        },
+      },
     };
   }
 
-  signToken(userId: number, email: string): Promise<string> {
+  signToken(
+    userId: number,
+    email: string,
+    roleId: number | null,
+  ): Promise<string> {
     const payload = {
       sub: userId,
       email,
+      roleId,
     };
 
     return this.jwt.signAsync(payload, {

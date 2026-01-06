@@ -1,5 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class SignUpDTO {
   @IsString()
@@ -13,6 +18,10 @@ export class SignUpDTO {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @IsInt()
+  @IsOptional()
+  roleId?: number | null;
 }
 
 export class SignInDTO {
