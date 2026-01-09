@@ -1,20 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { CreateRoleDTO, GetAllRolesDTO, UpdateRoleDTO } from './dto';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaClientKnownRequestError } from 'generated/prisma/internal/prismaNamespace';
+import { CreateModuleDTO, GetAllModulesDTO, UpdateModuleDTO } from './dto';
 
 @Injectable()
-export class RoleService {
+export class ModuleService {
   constructor(private prisma: PrismaService) {}
 
-  async getAllRoles(reqBody: GetAllRolesDTO) {
+  async getAllModules(reqBody: GetAllModulesDTO) {
     try {
       if (reqBody.page < 1 || reqBody.limit < 1)
         throw new Error('Invalid pagination parameters!');
 
-      const roles = await this.prisma.role.findMany({
+      const modules = await this.prisma.module.findMany({
         where: reqBody.search
           ? {
               name: {
@@ -29,7 +33,7 @@ export class RoleService {
         include: {
           roleModules: {
             include: {
-              module: true,
+              role: true,
             },
           },
         },
@@ -37,8 +41,8 @@ export class RoleService {
 
       return {
         status: true,
-        message: 'Roles fetched successfully',
-        data: roles,
+        message: 'Modules fetched successfully',
+        data: modules,
       };
     } catch (error: any) {
       return {
@@ -49,20 +53,20 @@ export class RoleService {
     }
   }
 
-  async findRole(id: number) {
+  async findModule(id: number) {
     try {
-      const role = await this.prisma.role.findUnique({
+      const module = await this.prisma.module.findUnique({
         where: { id },
         include: {
-          roleModules: { include: { module: true } },
+          roleModules: { include: { role: true } },
         },
       });
 
-      if (!role) throw new Error('Role does not exists!');
+      if (!module) throw new BadRequestException('Module does not exists!');
       return {
         status: true,
-        message: 'Role fetched successfully',
-        data: role,
+        message: 'Module fetched successfully',
+        data: module,
       };
     } catch (error) {
       return {
@@ -73,34 +77,34 @@ export class RoleService {
     }
   }
 
-  async createRole(reqBody: CreateRoleDTO) {
+  async createModule(reqBody: CreateModuleDTO) {
     try {
-      const role = await this.prisma.role.create({
+      const module = await this.prisma.module.create({
         data: {
           name: reqBody.name,
-          roleModules: reqBody.moduleIds
+          roleModules: reqBody.roleIds
             ? {
-                create: reqBody.moduleIds.map((moduleId) => ({
-                  moduleId,
+                create: reqBody.roleIds.map((roleId) => ({
+                  roleId,
                 })),
               }
             : undefined,
         },
         include: {
-          roleModules: { include: { module: true } },
+          roleModules: { include: { role: true } },
         },
       });
 
       return {
         status: true,
-        message: 'Role created successfully',
-        data: role,
+        message: 'Module created successfully',
+        data: module,
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2003') {
           throw new ForbiddenException(
-            'Assigned module(s) does not exists, Please create some.',
+            'Assigned role(s) does not exists, Please create some.',
           );
         }
       }
@@ -112,30 +116,30 @@ export class RoleService {
     }
   }
 
-  async updateRole(id: number, reqBody: UpdateRoleDTO) {
+  async updateModule(id: number, reqBody: UpdateModuleDTO) {
     try {
-      const updatedRole = await this.prisma.role.update({
+      const updatedModule = await this.prisma.module.update({
         where: { id },
         data: {
           name: reqBody.name,
-          roleModules: reqBody.moduleIds
+          roleModules: reqBody.roleIds
             ? {
                 deleteMany: {},
-                create: reqBody.moduleIds.map((moduleId) => ({
-                  moduleId,
+                create: reqBody.roleIds.map((roleId) => ({
+                  roleId,
                 })),
               }
             : undefined,
         },
         include: {
-          roleModules: { include: { module: true } },
+          roleModules: { include: { role: true } },
         },
       });
 
       return {
         status: true,
-        message: 'Role updated successfully',
-        data: updatedRole,
+        message: 'Module updated successfully',
+        data: updatedModule,
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
@@ -153,20 +157,20 @@ export class RoleService {
     }
   }
 
-  async deleteRole(id: number) {
+  async deleteModule(id: number) {
     try {
-      await this.prisma.role.delete({
+      await this.prisma.module.delete({
         where: { id },
       });
 
       return {
         status: true,
-        message: 'Role deleted successfully',
+        message: 'Module deleted successfully',
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
-          throw new ForbiddenException('Role does not exists!');
+          throw new ForbiddenException('Module does not exists!');
         }
       }
       return {

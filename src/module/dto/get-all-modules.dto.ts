@@ -1,6 +1,6 @@
 import { IsInt, IsNotEmpty, IsString } from 'class-validator';
 
-export class getAllRolesDTO {
+export class GetAllModulesDTO {
   @IsString()
   search: string;
 
