@@ -18,7 +18,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class RoleController {
   constructor(private roleService: RoleService) {}
 
-  @Get()
+  @Post()
   getAllRoles(@Body() body: GetAllRolesDTO) {
     return this.roleService.getAllRoles(body);
   }

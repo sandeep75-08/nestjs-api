@@ -21,7 +21,7 @@ import { ModuleService } from './module.service';
 export class ModuleController {
   constructor(private moduleService: ModuleService) {}
 
-  @Get()
+  @Post()
   getAllModules(@Body() body: GetAllModulesDTO) {
     return this.moduleService.getAllModules(body);
   }

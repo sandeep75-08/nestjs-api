@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { AddUserDTO, GetAllUsersDTO, UpdateUserDTO } from './dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -37,7 +40,6 @@ export class UserService {
     } catch (error: any) {
       return {
         status: false,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         message: error.message,
         data: null,
       };
@@ -87,6 +89,17 @@ export class UserService {
 
   async updateUser(reqBody: UpdateUserDTO) {
     try {
+      if (reqBody.roleId) {
+        const roleExists = await this.prisma.role.findUnique({
+          where: { id: reqBody.roleId },
+          select: { id: true },
+        });
+
+        if (!roleExists) {
+          throw new ForbiddenException('Role does not exists!');
+        }
+      }
+
       const user = await this.prisma.user.update({
         where: { id: reqBody.id },
         data: {

@@ -45,4 +45,8 @@ export class UpdateUserDTO {
   @IsString()
   @IsNotEmpty()
   fullName: string;
+
+  @IsInt()
+  @IsOptional()
+  roleId?: number | null;
 }

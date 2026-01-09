@@ -17,7 +17,7 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get('/')
+  @Post('/')
   getAllUsers(@Body() body: GetAllUsersDTO) {
     return this.userService.getAllUsers(body);
   }
