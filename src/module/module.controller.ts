@@ -6,18 +6,18 @@ import {
   Param,
   Post,
   Put,
-  //   UseGuards,
+  UseGuards,
 } from '@nestjs/common';
 import {
   CreateModuleDTO,
   GetAllModulesDTO,
   UpdateModuleDTO,
 } from 'src/module/dto';
-// import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from '@nestjs/passport';
 import { ModuleService } from './module.service';
 
 @Controller('modules')
-// @UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'))
 export class ModuleController {
   constructor(private moduleService: ModuleService) {}
 
