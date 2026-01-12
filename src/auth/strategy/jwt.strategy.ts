@@ -21,13 +21,23 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       where: {
         id: payload.sub,
       },
-      select: {
-        id: true,
-        email: true,
-        fullName: true,
-        createdAt: true,
-        updatedAt: true,
-        role: true,
+      include: {
+        role: {
+          include: {
+            roleModules: {
+              include: {
+                module: true,
+              },
+              omit: {
+                moduleId: true,
+                roleId: true,
+              },
+            },
+          },
+        },
+      },
+      omit: {
+        password: true,
       },
     });
 

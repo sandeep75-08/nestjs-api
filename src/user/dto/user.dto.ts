@@ -38,10 +38,6 @@ export class AddUserDTO {
 }
 
 export class UpdateUserDTO {
-  @IsInt()
-  @IsNotEmpty()
-  id: number;
-
   @IsString()
   @IsNotEmpty()
   fullName: string;

@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Put,
   Req,
@@ -32,8 +34,13 @@ export class UserController {
     return this.userService.addUser(body);
   }
 
-  @Put('update')
-  updateUser(@Body() body: UpdateUserDTO) {
-    return this.userService.updateUser(body);
+  @Put('update/:id')
+  updateUser(@Param('id') id: number, @Body() body: UpdateUserDTO) {
+    return this.userService.updateUser(id, body);
+  }
+
+  @Delete('delete/:id')
+  deleteUser(@Param('id') id: number) {
+    return this.userService.deleteUser(id);
   }
 }

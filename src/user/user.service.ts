@@ -76,7 +76,11 @@ export class UserService {
         },
       });
 
-      return { status: true, message: 'Signed up successfully', reqBody: user };
+      return {
+        status: true,
+        message: 'User added successfully',
+        reqBody: user,
+      };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -87,7 +91,7 @@ export class UserService {
     }
   }
 
-  async updateUser(reqBody: UpdateUserDTO) {
+  async updateUser(id: number, reqBody: UpdateUserDTO) {
     try {
       if (reqBody.roleId) {
         const roleExists = await this.prisma.role.findUnique({
@@ -101,10 +105,8 @@ export class UserService {
       }
 
       const user = await this.prisma.user.update({
-        where: { id: reqBody.id },
-        data: {
-          fullName: reqBody.fullName,
-        },
+        where: { id },
+        data: reqBody,
         omit: {
           password: true,
         },
@@ -113,7 +115,7 @@ export class UserService {
       return {
         status: true,
         message: 'User updated successfully',
-        reqBody: user,
+        data: user,
       };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
@@ -122,6 +124,26 @@ export class UserService {
         }
       }
       throw error;
+    }
+  }
+
+  async deleteUser(id: number) {
+    try {
+      await this.prisma.user.delete({
+        where: { id },
+      });
+
+      return {
+        status: true,
+        message: 'User deleted successfully',
+        data: null,
+      };
+    } catch (error) {
+      return {
+        status: false,
+        message: error.message,
+        data: null,
+      };
     }
   }
 }
