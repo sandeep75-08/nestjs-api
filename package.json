@@ -6,11 +6,15 @@
   "private": true,
   "type": "commonjs",
   "license": "UNLICENSED",
+  "prisma": {
+    "seed": "node prisma/seed.ts"
+  },
   "scripts": {
     "prisma:dev:deploy": "prisma migrate deploy",
+    "prisma:seed": "npx prisma db seed",
     "db:dev:rm": "docker compose stop myPostgresDBService && docker compose rm -f -v myPostgresDBService",
     "db:dev:up": "docker compose up -d --no-deps myPostgresDBService",
-    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:dev:deploy",
+    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:dev:deploy && npm run prisma:seed",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

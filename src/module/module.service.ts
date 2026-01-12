@@ -29,11 +29,15 @@ export class ModuleService {
           : {},
         skip: (reqBody.page - 1) * reqBody.limit,
         take: reqBody.limit,
-        orderBy: { name: 'asc' },
+        orderBy: { name: 'desc' },
         include: {
           roleModules: {
             include: {
               role: true,
+            },
+            omit: {
+              moduleId: true,
+              roleId: true,
             },
           },
         },
@@ -58,7 +62,13 @@ export class ModuleService {
       const module = await this.prisma.module.findUnique({
         where: { id },
         include: {
-          roleModules: { include: { role: true } },
+          roleModules: {
+            include: { role: true },
+            omit: {
+              moduleId: true,
+              roleId: true,
+            },
+          },
         },
       });
 
