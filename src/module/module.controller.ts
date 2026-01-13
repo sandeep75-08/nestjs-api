@@ -15,9 +15,12 @@ import {
 } from 'src/module/dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ModuleService } from './module.service';
+import { ModulesGuard } from 'src/auth/guards';
+import { Modules } from 'src/auth/decorator';
 
 @Controller('modules')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), ModulesGuard)
+@Modules('modules')
 export class ModuleController {
   constructor(private moduleService: ModuleService) {}
 

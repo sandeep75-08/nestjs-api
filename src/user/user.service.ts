@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AddUserDTO, GetAllUsersDTO, UpdateUserDTO } from './dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { hash } from 'argon2';
@@ -11,19 +15,25 @@ import { PrismaClientKnownRequestError } from 'generated/prisma/internal/prismaN
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getAllUsers(reqBody: GetAllUsersDTO) {
+  async getAllUsers(reqBody: GetAllUsersDTO, userId: number) {
     try {
+      if (!userId) throw new UnauthorizedException('User not authorized!');
       if (reqBody.page < 1 || reqBody.limit < 1)
         throw new Error('Invalid pagination parameters!');
       const users = await this.prisma.user.findMany({
-        where: reqBody.search
-          ? {
-              fullName: {
-                startsWith: reqBody.search,
-                mode: 'insensitive',
-              },
-            }
-          : {},
+        where: {
+          id: {
+            not: userId,
+          },
+          ...(reqBody.search
+            ? {
+                fullName: {
+                  startsWith: reqBody.search,
+                  mode: 'insensitive',
+                },
+              }
+            : {}),
+        },
         skip: (reqBody.page - 1) * reqBody.limit,
         take: reqBody.limit,
         orderBy: { fullName: 'asc' },

@@ -13,15 +13,19 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { AddUserDTO, GetAllUsersDTO, UpdateUserDTO } from './dto';
 import { UserService } from './user.service';
+import { ModulesGuard } from 'src/auth/guards';
+import { Modules } from 'src/auth/decorator';
+import { User } from 'generated/prisma/browser';
 
 @Controller('users')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), ModulesGuard)
+@Modules('users')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Post('/')
-  getAllUsers(@Body() body: GetAllUsersDTO) {
-    return this.userService.getAllUsers(body);
+  getAllUsers(@Body() body: GetAllUsersDTO, @Req() req: Request) {
+    return this.userService.getAllUsers(body, (req.user as User)?.id);
   }
 
   @Get('/me')

@@ -11,9 +11,12 @@ import {
 import { CreateRoleDTO, GetAllRolesDTO, UpdateRoleDTO } from './dto';
 import { RoleService } from './role.service';
 import { AuthGuard } from '@nestjs/passport';
+import { ModulesGuard } from 'src/auth/guards';
+import { Modules } from 'src/auth/decorator';
 
 @Controller('roles')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), ModulesGuard)
+@Modules('roles')
 export class RoleController {
   constructor(private roleService: RoleService) {}
 
