@@ -88,13 +88,26 @@ export class RoleService {
       const role = await this.prisma.role.create({
         data: {
           name: reqBody.name,
-          roleModules: reqBody.moduleIds
-            ? {
-                create: reqBody.moduleIds.map((moduleId) => ({
-                  moduleId,
-                })),
-              }
-            : undefined,
+          roleModules:
+            reqBody.permissions && reqBody.permissions.length > 0
+              ? {
+                  create: reqBody.permissions.map(
+                    ({
+                      moduleId,
+                      canRead,
+                      canWrite,
+                      canUpdate,
+                      canDelete,
+                    }) => ({
+                      moduleId,
+                      canRead,
+                      canWrite,
+                      canUpdate,
+                      canDelete,
+                    }),
+                  ),
+                }
+              : undefined,
         },
         include: {
           roleModules: { include: { module: true } },
@@ -128,14 +141,27 @@ export class RoleService {
         where: { id },
         data: {
           name: reqBody.name,
-          roleModules: reqBody.moduleIds
-            ? {
-                deleteMany: {},
-                create: reqBody.moduleIds.map((moduleId) => ({
-                  moduleId,
-                })),
-              }
-            : undefined,
+          roleModules:
+            reqBody.permissions && reqBody.permissions.length > 0
+              ? {
+                  deleteMany: {},
+                  create: reqBody.permissions.map(
+                    ({
+                      moduleId,
+                      canRead,
+                      canWrite,
+                      canUpdate,
+                      canDelete,
+                    }) => ({
+                      moduleId,
+                      canRead,
+                      canWrite,
+                      canUpdate,
+                      canDelete,
+                    }),
+                  ),
+                }
+              : undefined,
         },
         include: {
           roleModules: {

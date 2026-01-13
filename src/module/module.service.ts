@@ -92,13 +92,20 @@ export class ModuleService {
       const module = await this.prisma.module.create({
         data: {
           name: reqBody.name,
-          roleModules: reqBody.roleIds
-            ? {
-                create: reqBody.roleIds.map((roleId) => ({
-                  roleId,
-                })),
-              }
-            : undefined,
+          roleModules:
+            reqBody.permissions && reqBody.permissions.length > 0
+              ? {
+                  create: reqBody.permissions.map(
+                    ({ roleId, canRead, canWrite, canUpdate, canDelete }) => ({
+                      roleId,
+                      canRead,
+                      canWrite,
+                      canUpdate,
+                      canDelete,
+                    }),
+                  ),
+                }
+              : undefined,
         },
         include: {
           roleModules: { include: { role: true } },
@@ -132,14 +139,21 @@ export class ModuleService {
         where: { id },
         data: {
           name: reqBody.name,
-          roleModules: reqBody.roleIds
-            ? {
-                deleteMany: {},
-                create: reqBody.roleIds.map((roleId) => ({
-                  roleId,
-                })),
-              }
-            : undefined,
+          roleModules:
+            reqBody.permissions && reqBody.permissions.length > 0
+              ? {
+                  deleteMany: {},
+                  create: reqBody.permissions.map(
+                    ({ roleId, canRead, canWrite, canUpdate, canDelete }) => ({
+                      roleId,
+                      canRead,
+                      canWrite,
+                      canUpdate,
+                      canDelete,
+                    }),
+                  ),
+                }
+              : undefined,
         },
         include: {
           roleModules: { include: { role: true } },

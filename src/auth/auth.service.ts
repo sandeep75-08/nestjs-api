@@ -13,47 +13,6 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  // async signup(reqBody: SignUpDTO) {
-  //   try {
-  //     if (reqBody.roleId) {
-  //       const roleExists = await this.prisma.role.findUnique({
-  //         where: { id: reqBody.roleId },
-  //         select: { id: true },
-  //       });
-
-  //       if (!roleExists) {
-  //         throw new ForbiddenException('Role does not exists!');
-  //       }
-  //     }
-
-  //     const hashedPassword = await hash(reqBody.password);
-
-  //     const user = await this.prisma.user.create({
-  //       data: {
-  //         email: reqBody.email,
-  //         fullName: reqBody.fullName,
-  //         password: hashedPassword,
-  //         roleId: reqBody.roleId,
-  //       },
-  //       select: {
-  //         id: true,
-  //         email: true,
-  //         fullName: true,
-  //         createdAt: true,
-  //       },
-  //     });
-
-  //     return { status: true, message: 'Signed up successfully', reqBody: user };
-  //   } catch (error) {
-  //     if (error instanceof PrismaClientKnownRequestError) {
-  //       if (error.code === 'P2002') {
-  //         throw new ForbiddenException('Email is already in use');
-  //       }
-  //     }
-  //     throw error;
-  //   }
-  // }
-
   async signin(reqBody: SignInDTO) {
     const user = await this.prisma.user.findUnique({
       where: {

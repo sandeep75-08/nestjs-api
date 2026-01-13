@@ -46,6 +46,11 @@ model RoleModule {
   roleId   Int
   moduleId Int
 
+  canRead   Boolean @default(true)
+  canWrite  Boolean @default(false)
+  canUpdate Boolean @default(false)
+  canDelete Boolean @default(false)
+
   role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
   module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 

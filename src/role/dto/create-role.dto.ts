@@ -1,10 +1,5 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsArray,
-  IsInt,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsArray } from 'class-validator';
+import { RolePermissions } from 'types';
 
 export class CreateRoleDTO {
   @IsString()
@@ -13,6 +8,5 @@ export class CreateRoleDTO {
 
   @IsOptional()
   @IsArray()
-  @IsInt({ each: true })
-  moduleIds?: number[];
+  permissions?: RolePermissions[];
 }

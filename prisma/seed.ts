@@ -39,6 +39,10 @@ async function main() {
           ? {
               create: moduleList.map((moduleId) => ({
                 moduleId,
+                canRead: true,
+                canWrite: true,
+                canUpdate: true,
+                canDelete: true,
               })),
             }
           : undefined,
